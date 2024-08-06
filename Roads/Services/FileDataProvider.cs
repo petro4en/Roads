@@ -1,6 +1,7 @@
-﻿using Roads.Models;
+﻿using Roads.Extensions;
+using Roads.Models;
+using Roads.Services.Conracts;
 using System.Xml;
-using System.Xml.Linq;
 
 namespace Roads.Services
 {
@@ -9,72 +10,6 @@ namespace Roads.Services
         const string fileName = "monaco-latest.osm";
         //const string fileName = "switzerland-latest.osm";
         const string filePath = $"..//..//..//Resources//{fileName}";
-
-        public Dictionary<long, Node> GetNodes()
-        {
-            var reader = new XmlTextReader($"Resources//{fileName}");
-            var nodes = new Dictionary<long, Node>();
-
-            while (reader.Read())
-            {
-                if (reader.NodeType == XmlNodeType.Element && reader.Name == "node")
-                {
-                    var id = long.Parse(reader.GetAttribute("id"));
-                    var lat = double.Parse(reader.GetAttribute("lat"));
-                    var lon = double.Parse(reader.GetAttribute("lon"));
-                    nodes.Add(
-                        id,
-                        new Node
-                        {
-                            Latitude = lat,
-                            Longitude = lon,
-                        });
-                }
-            }
-
-            return nodes;
-        }
-
-        public void FillNodes(Dictionary<long, Node?> nodes)
-        {
-            using (XmlReader reader = XmlReader.Create(filePath))
-            {
-                while (reader.Read())
-                {
-                    if (reader.NodeType == XmlNodeType.Element && reader.Name == "node")
-                    {
-                        var id = long.Parse(reader.GetAttribute("id"));
-                        if (nodes.ContainsKey(id))
-                        {
-                            nodes[id] = new Node
-                            {
-                                Latitude = double.Parse(reader.GetAttribute("lat")),
-                                Longitude = double.Parse(reader.GetAttribute("lon")),
-                            };
-                        }
-                    }
-                }
-            }
-
-            /*while (reader.Read())
-            {
-                if (reader.NodeType == XmlNodeType.Element && reader.Name == "node")
-                {
-                    var id = long.Parse(reader.GetAttribute("id"));
-                    var lat = double.Parse(reader.GetAttribute("lat"));
-                    var lon = double.Parse(reader.GetAttribute("lon"));
-                    nodes.Add(
-                        id,
-                        new Node
-                        {
-                            Latitude = lat,
-                            Longitude = lon,
-                        });
-                }
-            }
-
-            return nodes;*/
-        }
 
         public IEnumerable<Way> GetWays()
         {
@@ -123,134 +58,26 @@ namespace Roads.Services
             }
         }
 
-
-        public Dictionary<long, Way> GetWaysDictionary()
+        public void FillNodes(Dictionary<long, Node?> nodes)
         {
-            var reader = new XmlTextReader($"Resources//{fileName}");
-            var ways = new Dictionary<long, Way>();
-
-            while (reader.Read())
+            using (XmlReader reader = XmlReader.Create(filePath))
             {
-                if (reader.NodeType == XmlNodeType.Element && reader.Name == "way")
+                while (reader.Read())
                 {
-                    var id = long.Parse(reader.GetAttribute("id"));
-
-                    var nodeIds = new List<long>();
-                    var tags = new Dictionary<string, string>();
-
-                    while (reader.Read() && !(reader.NodeType == XmlNodeType.EndElement && reader.Name == "way"))
+                    if (reader.NodeType == XmlNodeType.Element && reader.Name == "node")
                     {
-                        if (reader.NodeType == XmlNodeType.Element && reader.Name == "nd")
+                        var id = long.Parse(reader.GetAttribute("id"));
+                        if (nodes.ContainsKey(id))
                         {
-                            nodeIds.Add(long.Parse(reader.GetAttribute("ref")));
-                        }
-
-                        if (reader.NodeType == XmlNodeType.Element && reader.Name == "tag")
-                        {
-                            tags.Add(reader.GetAttribute("k"), reader.GetAttribute("v"));
+                            nodes[id] = new Node
+                            {
+                                Latitude = reader.GetAttribute("lat").ToDouble(),
+                                Longitude = reader.GetAttribute("lon").ToDouble(),
+                            };
                         }
                     }
-
-                    ways.Add(
-                        id,
-                        new Way
-                        {
-                            Id = id,
-                            NodeIds = nodeIds.Count > 0 ? nodeIds.ToArray() : null,
-                            //Tags = tags.Count > 0 ? tags : null,
-                        });
                 }
             }
-
-            return ways;
         }
-
-        public Dictionary<long, Way> GetWaysOld()
-        {
-            var reader = new XmlTextReader($"Resources//{fileName}");
-            var ways = new Dictionary<long, Way>();
-
-            while (reader.Read())
-            {
-                if (reader.NodeType == XmlNodeType.Element && reader.Name == "way")
-                {
-                    var id = long.Parse(reader.GetAttribute("id"));
-
-                    var nodeIds = new List<long>();
-                    var tags = new Dictionary<string, string>();
-
-                    while (reader.Read() && !(reader.NodeType == XmlNodeType.EndElement && reader.Name == "way"))
-                    {
-                        if (reader.NodeType == XmlNodeType.Element && reader.Name == "nd")
-                        {
-                            nodeIds.Add(long.Parse(reader.GetAttribute("ref")));
-                        }
-
-                        if (reader.NodeType == XmlNodeType.Element && reader.Name == "tag")
-                        {
-                            tags.Add(reader.GetAttribute("k"), reader.GetAttribute("v"));
-                        }
-                    }
-
-                    ways.Add(
-                        id,
-                        new Way
-                        {
-                            Id = id,
-                            NodeIds = nodeIds.Count > 0 ? nodeIds.ToArray() : null,
-                            //Tags = tags.Count > 0 ? tags : null,
-                        });
-                }
-            }
-
-            return ways;
-        }
-
-        public List<long> GetNodesIds()
-        {
-            var reader = new XmlTextReader($"Resources//{fileName}");
-            var nodes = new List<long>();
-
-            while (reader.Read())
-            {
-                if (reader.NodeType == XmlNodeType.Element && reader.Name == "node")
-                {
-                    var id = long.Parse(reader.GetAttribute("id"));
-                    nodes.Add(id);
-                }
-            }
-
-            return nodes;
-        }
-
-        public Dictionary<long, Node> GetNodes3()
-        {
-            XmlDocument doc = new XmlDocument();
-            doc.Load($"Resources//{fileName}");
-
-            var nodes = new Dictionary<long, Node>();
-
-            foreach (XmlNode xmlNode in doc.DocumentElement.ChildNodes)
-            {
-                if (xmlNode.Name == "node")
-                {
-                    var id = long.Parse(GetXmlAttributeValue(xmlNode, "id"));
-                    var lat = double.Parse(GetXmlAttributeValue(xmlNode, "lat"));
-                    var lon = double.Parse(GetXmlAttributeValue(xmlNode, "lon"));
-                    nodes.Add(
-                        id,
-                        new Node
-                        {
-                            Latitude = lat,
-                            Longitude = lon,
-                        });
-                }
-            }
-
-            return nodes;
-        }
-
-        private static string GetXmlAttributeValue(XmlNode xmlNode, string attributeName)
-            => xmlNode.Attributes[attributeName].Value;
     }
 }
