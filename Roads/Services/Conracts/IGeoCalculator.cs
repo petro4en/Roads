@@ -1,7 +1,10 @@
-﻿namespace Roads.Services.Conracts
+﻿using Roads.Models;
+using System.Collections.Generic;
+
+namespace Roads.Services.Conracts
 {
     public interface IGeoCalculator
     {
-        double GaussLengthForMidLatitudeShortLines(double phi1, double lambda1, double phi2, double lambda2);
+        double GetFullDistance(long[] nodeIds, Dictionary<long, Node?> nodes);
     }
 }

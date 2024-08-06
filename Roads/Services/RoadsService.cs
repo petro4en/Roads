@@ -49,22 +49,7 @@ namespace Roads.Services
 
             for (int i = 0; i < ways.Length; i++)
             {
-                if (ways[i].NodeIds == null || ways[i].NodeIds.Length < 2)
-                {
-                    continue;
-                }
-
-                for (int j = 1; j < ways[i].NodeIds.Length; j++)
-                {
-                    var node1 = nodes[ways[i].NodeIds[j - 1]];
-                    var node2 = nodes[ways[i].NodeIds[j]];
-
-                    ways[i].Distance += geoCalculator.GaussLengthForMidLatitudeShortLines(
-                        node1.Value.Latitude,
-                        node1.Value.Longitude,
-                        node2.Value.Latitude,
-                        node2.Value.Longitude);
-                }
+                ways[i].Distance = geoCalculator.GetFullDistance(ways[i].NodeIds, nodes);
             }
 
             watch.FixTimeAndStop("Calculate distances", logger);

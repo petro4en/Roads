@@ -1,5 +1,7 @@
-﻿using Roads.Services.Conracts;
+﻿using Roads.Models;
+using Roads.Services.Conracts;
 using System;
+using System.Collections.Generic;
 
 namespace Roads.Services
 {
@@ -28,13 +30,37 @@ namespace Roads.Services
             return (1 - eccentricity * eccentricity) / (equatorialRadius * equatorialRadius) * tripleN;
         }
 
+        public double GetFullDistance(long[] nodeIds, Dictionary<long, Node?> nodes)
+        {
+            if (nodeIds == null || nodeIds.Length < 2)
+            {
+                return 0;
+            }
+
+            double distance = 0;
+
+            for (int i = 1; i < nodeIds.Length; i++)
+            {
+                var node1 = nodes[nodeIds[i - 1]];
+                var node2 = nodes[nodeIds[i]];
+
+                distance += GaussLengthForMidLatitudeShortLines(
+                    node1.Value.Latitude,
+                    node1.Value.Longitude,
+                    node2.Value.Latitude,
+                    node2.Value.Longitude);
+            }
+
+            return distance;
+        }
+
         /// <summary>
         /// Length calculating method for middle latitudes for short lines by Gauss
         /// </summary>
         /// <param name="phi"> latitude </param>
         /// <param name="lambda"> longitude </param>
         /// <returns></returns>
-        public double GaussLengthForMidLatitudeShortLines(double phi1, double lambda1, double phi2, double lambda2)
+        private double GaussLengthForMidLatitudeShortLines(double phi1, double lambda1, double phi2, double lambda2)
         {
             var midPhi = (phi1 + phi2) / 2;
             var deltaPhi = phi2 - phi1;
