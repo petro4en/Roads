@@ -1,4 +1,7 @@
-﻿namespace Roads.Extensions
+﻿using System;
+using System.Collections.Generic;
+
+namespace Roads.Extensions
 {
     public static class CollectionExtensions
     {

@@ -11,5 +11,7 @@
         public string? Name { get; set; }
 
         public string? HighwayType { get; set; }
+
+        public double Distance { get; set; }
     }
 }

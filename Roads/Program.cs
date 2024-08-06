@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Roads.Services;
 using Roads.Services.Conracts;
+using System;
 
 namespace Roads
 {
@@ -14,6 +15,7 @@ namespace Roads
 
             builder.Services
                 .AddScoped<IDataProvider, FileDataProvider>()
+                .AddScoped<IGeoCalculator, GeoCalculator>()
                 .AddSingleton<IRoadsService, RoadsService>()
                 .AddLogging(cfg => cfg.AddConsole());
 
