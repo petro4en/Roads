@@ -5,6 +5,6 @@ namespace Roads.Services.Conracts
 {
     public interface IGeoCalculator
     {
-        double GetFullDistance(long[] nodeIds, Dictionary<long, Node?> nodes);
+        double GetFullDistance(long[] nodeIds, Dictionary<long, Node> nodes);
     }
 }

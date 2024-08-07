@@ -2,6 +2,7 @@
 using Roads.Extensions;
 using Roads.Models;
 using Roads.Services.Conracts;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -34,18 +35,15 @@ namespace Roads.Services
 
             watch.FixTimeAndRestart(nameof(dataProvider.GetWays), logger);
 
-            //var nodeIds = waysList.SelectMany(w => w.NodeIds).Distinct();
             var nodes = ways
                             .SelectMany(w => w.NodeIds)
                             .Distinct()
-                            .ToDictionary(k => k, v => default(Node?));
+                            .ToDictionary(k => k, v => default(Node));
 
             watch.FixTimeAndRestart("nodesToDictionary", logger);
             
             dataProvider.FillNodes(nodes);
             watch.FixTimeAndRestart(nameof(dataProvider.FillNodes), logger);
-
-            //var distances = new Road[ways.Length];
 
             for (int i = 0; i < ways.Length; i++)
             {

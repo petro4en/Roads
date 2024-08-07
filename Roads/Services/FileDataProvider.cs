@@ -8,8 +8,8 @@ namespace Roads.Services
 {
     public class FileDataProvider : IDataProvider
     {
-        const string fileName = "monaco-latest.osm";
-        //const string fileName = "switzerland-latest.osm";
+        //const string fileName = "monaco-latest.osm";
+        const string fileName = "switzerland-latest.osm";
         const string filePath = $"..//..//..//Resources//{fileName}";
 
         public IEnumerable<Way> GetWays()
@@ -59,7 +59,7 @@ namespace Roads.Services
             }
         }
 
-        public void FillNodes(Dictionary<long, Node?> nodes)
+        public void FillNodes(Dictionary<long, Node> nodes)
         {
             using (XmlReader reader = XmlReader.Create(filePath))
             {

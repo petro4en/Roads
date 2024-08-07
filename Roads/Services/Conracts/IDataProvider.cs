@@ -7,6 +7,6 @@ namespace Roads.Services.Conracts
     {
         IEnumerable<Way> GetWays();
 
-        void FillNodes(Dictionary<long, Node?> nodes);
+        void FillNodes(Dictionary<long, Node> nodes);
     }
 }
